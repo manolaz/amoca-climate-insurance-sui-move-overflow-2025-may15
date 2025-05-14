@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Polygon, useMapEvents } from "react-leaflet";
-import { geoToH3, h3ToGeoBoundary, kRing } from "h3-js";
+import * as h3 from "h3-js";
 import "leaflet/dist/leaflet.css";
 import { Box, Heading, TextField, Button, Flex, Text, Card, Badge, Checkbox, Tabs, Grid } from "@radix-ui/themes";
 
@@ -75,10 +75,10 @@ const INSURANCE_TYPES = [
 
 function getHexagons(center, radiusKm = 5) {
   // Get all hexagons within a radius (in km) of the center
-  const h3Center = geoToH3(center[0], center[1], H3_RESOLUTION);
+  const h3Center = h3.geoToH3(center[0], center[1], H3_RESOLUTION);
   // Approximate: 1km per ring
   const rings = Math.ceil(radiusKm / 1);
-  return [h3Center, ...kRing(h3Center, rings).filter(h => h !== h3Center)];
+  return [h3Center, ...h3.kRing(h3Center, rings).filter(hVal => hVal !== h3Center)];
 }
 
 function HexagonSelector({ hexagons, selectedHexagons, setSelectedHexagons, selectionMode }) {
@@ -88,7 +88,7 @@ function HexagonSelector({ hexagons, selectedHexagons, setSelectedHexagons, sele
       
       // Convert click to H3 index
       const { lat, lng } = e.latlng;
-      const clickedHex = geoToH3(lat, lng, H3_RESOLUTION);
+      const clickedHex = h3.geoToH3(lat, lng, H3_RESOLUTION);
       
       // Toggle selection
       if (selectedHexagons.includes(clickedHex)) {
@@ -102,7 +102,7 @@ function HexagonSelector({ hexagons, selectedHexagons, setSelectedHexagons, sele
   return (
     <>
       {hexagons.map(h3Index => {
-        const boundary = h3ToGeoBoundary(h3Index, true).map(([lat, lng]) => [lat, lng]);
+        const boundary = h3.h3ToGeoBoundary(h3Index, true).map(([lat, lng]) => [lat, lng]);
         const isSelected = selectedHexagons.includes(h3Index);
         
         return (
@@ -316,7 +316,7 @@ export default function WorldmapSelector() {
         </Tabs.List>
         
         <Tabs.Content value="risk">
-          <Card mt="3" p="3">
+          <Card mt="3" style={{ padding: "var(--space-3)" }}>
             <Heading size="3" mb="2">Climate Risk Profile: {currentRegion}</Heading>
             <Text mb="2">Selected area: {selectedHexagons.length} hexagons (~{selectedHexagons.length} sq km)</Text>
             
@@ -350,7 +350,7 @@ export default function WorldmapSelector() {
         </Tabs.Content>
         
         <Tabs.Content value="coverage">
-          <Card mt="3" p="3">
+          <Card mt="3" style={{ padding: "var(--space-3)" }}>
             <Heading size="3" mb="2">Select Insurance Coverage</Heading>
             <Text mb="3">Choose the coverage types needed for your business in this area:</Text>
             
@@ -407,7 +407,7 @@ export default function WorldmapSelector() {
         </Tabs.Content>
         
         <Tabs.Content value="summary">
-          <Card mt="3" p="3">
+          <Card mt="3" style={{ padding: "var(--space-3)" }}>
             <Heading size="3" mb="2">Insurance Summary</Heading>
             <Box p="3" style={{ background: "#eaf7f2", borderRadius: 8 }}>
               <Flex justify="between" mb="2">

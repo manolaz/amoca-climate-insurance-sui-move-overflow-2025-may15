@@ -1,5 +1,5 @@
 import { ConnectButton, useCurrentAccount } from "@mysten/dapp-kit";
-import { Box, Container, Flex, Heading, Button } from "@radix-ui/themes";
+import { Box, Flex, Heading, Button } from "@radix-ui/themes";
 import { Link, useLocation } from "react-router-dom";
 
 export default function Header() {
@@ -16,15 +16,19 @@ export default function Header() {
 
   return (
     <Flex
-      position="sticky"
-      px="4"
-      py="2"
-      justify="between"
-      align="center"
       style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 100,
         borderBottom: "1px solid var(--gray-a2)",
         background: "linear-gradient(90deg, #004d2e 0%, #006647 100%)",
+        paddingLeft: "var(--space-4)",
+        paddingRight: "var(--space-4)",
+        paddingTop: "var(--space-2)",
+        paddingBottom: "var(--space-2)"
       }}
+      justify="between"
+      align="center"
     >
       <Flex align="center" gap="4">
         <Box>

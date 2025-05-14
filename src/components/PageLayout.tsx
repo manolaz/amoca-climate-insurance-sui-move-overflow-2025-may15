@@ -11,10 +11,10 @@ export default function PageLayout({ children, title, subtitle }: PageLayoutProp
   return (
     <Container>
       <Box
-        mt="5"
-        pt="2"
-        px="4"
-        pb="6"
+        mt={5 as any}
+        pt={2 as any}
+        px={4 as any}
+        pb={6 as any}
         style={{ 
           background: "linear-gradient(135deg, var(--gray-a2) 0%, var(--gray-a1) 100%)", 
           minHeight: 600,
@@ -23,12 +23,12 @@ export default function PageLayout({ children, title, subtitle }: PageLayoutProp
         }}
       >
         {title && (
-          <Heading size="4" mb={subtitle ? "1" : "4"} style={{ color: "#007a4d" }}>
+          <Heading size="4" mb={subtitle ? (1 as any) : (4 as any)} style={{ color: "#007a4d" }}>
             {title}
           </Heading>
         )}
         {subtitle && (
-          <Heading size="2" mb="4" style={{ color: "#666", fontWeight: "normal" }}>
+          <Heading size="2" mb={4 as any} style={{ color: "#666", fontWeight: "normal" }}>
             {subtitle}
           </Heading>
         )}

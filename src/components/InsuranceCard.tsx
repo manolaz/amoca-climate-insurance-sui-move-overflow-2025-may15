@@ -16,15 +16,15 @@ export default function InsuranceCard({
 }: InsuranceCardProps) {
   return (
     <Box
-      p="4"
       style={{
         border: '1.5px solid #0077ff',
         borderRadius: 16,
         background: 'linear-gradient(135deg, #e6f9f0 0%, #e6f0fa 100%)',
-        boxShadow: '0 2px 12px 0 rgba(0,119,255,0.07)'
+        boxShadow: '0 2px 12px 0 rgba(0,119,255,0.07)',
+        padding: "var(--space-4)"
       }}
     >
-      <Flex align="center" gap="2" mb="2">
+      <Flex align="center" gap="2" style={{ marginBottom: "var(--space-2)" }}>
         {icon && (
           <Box style={{ fontSize: '1.5rem' }}>
             {icon}
@@ -41,7 +41,7 @@ export default function InsuranceCard({
           {name}
         </Heading>
       </Flex>
-      <Text as="p" size="2" style={{ color: "#333" }} mb="3">
+      <Text as="p" size="2" style={{ color: "#333", marginBottom: "var(--space-3)" }}>
         {description}
       </Text>
       <Link to={linkTo} style={{ textDecoration: 'none' }}>
