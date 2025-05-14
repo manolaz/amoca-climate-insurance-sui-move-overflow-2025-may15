@@ -83,7 +83,7 @@ function getHexagons(center, radiusKm = 5) {
 
 function HexagonSelector({ hexagons, selectedHexagons, setSelectedHexagons, selectionMode }) {
   useMapEvents({
-    click: (e) => {
+    click: (e: any) => {
       if (!selectionMode) return;
       
       // Convert click to H3 index
@@ -92,9 +92,9 @@ function HexagonSelector({ hexagons, selectedHexagons, setSelectedHexagons, sele
       
       // Toggle selection
       if (selectedHexagons.includes(clickedHex)) {
-        setSelectedHexagons(prev => prev.filter(h => h !== clickedHex));
+        setSelectedHexagons((prev: string[]) => prev.filter(h => h !== clickedHex));
       } else {
-        setSelectedHexagons(prev => [...prev, clickedHex]);
+        setSelectedHexagons((prev: string[]) => [...prev, clickedHex]);
       }
     }
   });
@@ -285,7 +285,7 @@ export default function WorldmapSelector() {
       </Flex>
 
       <MapContainer
-        center={center}
+        center={center as [number, number]}
         zoom={13}
         style={{
           height: "500px",
