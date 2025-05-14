@@ -13,25 +13,29 @@
     "@mysten/dapp-kit": "0.16.3",
     "@mysten/sui": "1.29.1",
     "@radix-ui/colors": "^3.0.0",
-    "@radix-ui/react-icons": "^1.3.0",
+    "@radix-ui/react-icons": "^1.3.2",
     "@radix-ui/themes": "^3.2.1",
-    "@tanstack/react-query": "^5.71.3",
+    "@tanstack/react-query": "^5.76.1",
     "@wormhole-foundation/wormhole-connect": "^2.5.0",
+    "h3-js": "^4.2.1",
+    "leaflet": "^1.9.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-leaflet": "^5.0.0",
+    "react-router-dom": "^7.6.0",
     "react-spinners": "0.17.0"
   },
   "devDependencies": {
     "@types/react": "19.1.4",
     "@types/react-dom": "19.1.5",
-    "@typescript-eslint/eslint-plugin": "^8.19.0",
-    "@typescript-eslint/parser": "^8.19.0",
-    "@vitejs/plugin-react-swc": "^3.7.0",
-    "eslint": "^9.17.0",
+    "@typescript-eslint/eslint-plugin": "^8.32.1",
+    "@typescript-eslint/parser": "^8.32.1",
+    "@vitejs/plugin-react-swc": "^3.9.0",
+    "eslint": "^9.26.0",
     "eslint-plugin-react-hooks": "5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.7",
+    "eslint-plugin-react-refresh": "^0.4.20",
     "prettier": "^3.5.3",
-    "typescript": "^5.8.2",
-    "vite": "^6.2.5"
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
   }
 }
