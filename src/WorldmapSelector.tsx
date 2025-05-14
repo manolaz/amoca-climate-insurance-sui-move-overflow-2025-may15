@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Polygon, useMapEvents } from "react-leaflet";
-import { geoToH3, kRing, h3ToGeoBoundary } from "h3-js";
+import * as h3 from "h3-js"; // Changed import
 import "leaflet/dist/leaflet.css";
 import { Box, Heading, TextField, Button, Flex, Text, Card, Badge, Checkbox, Tabs, Grid } from "@radix-ui/themes";
 
@@ -84,10 +84,10 @@ interface HexagonSelectorProps {
 
 function getHexagons(center: LatLngTuple, radiusKm = 5): string[] {
   // Get all hexagons within a radius (in km) of the center
-  const h3Center = geoToH3(center[0], center[1], H3_RESOLUTION);
+  const h3Center = h3.geoToH3(center[0], center[1], H3_RESOLUTION); // Changed usage
   // Approximate: 1km per ring
   const rings = Math.ceil(radiusKm / 1);
-  return [h3Center, ...kRing(h3Center, rings).filter((h: string) => h !== h3Center)];
+  return [h3Center, ...h3.kRing(h3Center, rings).filter((h: string) => h !== h3Center)]; // Changed usage
 }
 
 function HexagonSelector({ hexagons, selectedHexagons, setSelectedHexagons, selectionMode }: HexagonSelectorProps) {
@@ -97,7 +97,7 @@ function HexagonSelector({ hexagons, selectedHexagons, setSelectedHexagons, sele
       
       // Convert click to H3 index
       const { lat, lng } = e.latlng;
-      const clickedHex = geoToH3(lat, lng, H3_RESOLUTION);
+      const clickedHex = h3.geoToH3(lat, lng, H3_RESOLUTION); // Changed usage
       
       // Toggle selection
       if (selectedHexagons.includes(clickedHex)) {
@@ -111,7 +111,7 @@ function HexagonSelector({ hexagons, selectedHexagons, setSelectedHexagons, sele
   return (
     <>
       {hexagons.map(h3Index => {
-        const boundary = h3ToGeoBoundary(h3Index, true).map(
+        const boundary = h3.h3ToGeoBoundary(h3Index, true).map( // Changed usage
           ([lat, lng]: [number, number]) => [lat, lng] as LatLngTuple
         );
         const isSelected = selectedHexagons.includes(h3Index);
@@ -232,19 +232,21 @@ export default function WorldmapSelector() {
         AMOCA Climate Insurance - Area Selector
       </Heading>
       <Flex gap="2" mb="2" align="center">
-        <TextField.Input
-          placeholder="Search country, state, city, or code..."
-          value={search}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
-          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-            if (e.key === "Enter") handleSearch();
-          }}
-          style={{
-            borderColor: "#0077ff",
-            background: "#f7fff9",
-            color: "#007a4d"
-          }}
-        />
+        <TextField.Root> {/* Added TextField.Root wrapper */}
+          <TextField.Input
+            placeholder="Search country, state, city, or code..."
+            value={search}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+            onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+              if (e.key === "Enter") handleSearch();
+            }}
+            style={{
+              borderColor: "#0077ff",
+              background: "#f7fff9",
+              color: "#007a4d"
+            }}
+          />
+        </TextField.Root> {/* Added TextField.Root wrapper */}
         <Button
           onClick={handleSearch}
           disabled={searching || !search}
