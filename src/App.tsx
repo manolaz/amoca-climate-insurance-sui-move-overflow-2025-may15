@@ -2,7 +2,7 @@ import { ConnectButton, useCurrentAccount } from "@mysten/dapp-kit";
 import { Box, Container, Flex, Heading, Text } from "@radix-ui/themes";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Header from "./components/Header";
-import HomePage from "./pages/HomePage";
+// import HomePage from "./pages/HomePage";
 import RiskMapPage from "./pages/RiskMapPage";
 import ProductsPage from "./pages/ProductsPage";
 import ClaimsPage from "./pages/ClaimsPage";

@@ -1,4 +1,4 @@
-import { Box, Heading, Text, Flex, Card, Grid, Button } from "@radix-ui/themes";
+import { Box, Heading, Text, Flex, Card, Grid } from "@radix-ui/themes";
 import InsuranceCard from "../components/InsuranceCard";
 import PageLayout from "../components/PageLayout";
 import { useCurrentAccount } from "@mysten/dapp-kit";
@@ -41,7 +41,10 @@ export default function HomePage() {
 
   return (
     <PageLayout>
-      <Card mb="4" p="4" style={{ background: "linear-gradient(135deg, #e6f0fa 0%, #d1e9ff 100%)" }}>
+      <Card mb="4" style={{
+         background: "linear-gradient(135deg, #e6f0fa 0%, #d1e9ff 100%)",
+         padding: "var(--space-4)" 
+      }}>
         <Flex gap="4">
           <Box style={{ flex: 1 }}>
             <Heading size="5" mb="2" style={{ color: "#0077ff" }}>

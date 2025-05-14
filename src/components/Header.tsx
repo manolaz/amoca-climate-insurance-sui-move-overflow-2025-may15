@@ -1,9 +1,8 @@
-import { ConnectButton, useCurrentAccount } from "@mysten/dapp-kit";
+import { ConnectButton } from "@mysten/dapp-kit";
 import { Box, Flex, Heading, Button } from "@radix-ui/themes";
 import { Link, useLocation } from "react-router-dom";
 
 export default function Header() {
-  const currentAccount = useCurrentAccount();
   const location = useLocation();
 
   const navItems = [
@@ -37,7 +36,7 @@ export default function Header() {
           </Heading>
         </Box>
         
-        <Flex as="nav" gap="3">
+        <Flex gap="3" role="navigation" aria-label="Main navigation">
           {navItems.map((item) => (
             <Link 
               key={item.path} 

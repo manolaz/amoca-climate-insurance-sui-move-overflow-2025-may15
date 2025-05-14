@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Polygon, useMapEvents } from "react-leaflet";
-import * as h3 from "h3-js";
+import { geoToH3, kRing, h3ToGeoBoundary } from "h3-js";
 import "leaflet/dist/leaflet.css";
 import { Box, Heading, TextField, Button, Flex, Text, Card, Badge, Checkbox, Tabs, Grid } from "@radix-ui/themes";
 
 // Coordinates for Nha Trang, Vietnam
 const NHA_TRANG_COORDS = [12.2388, 109.1967];
-const HEX_EDGE_LENGTH_KM = 1; // 1km edge
 const H3_RESOLUTION = 8; // ~1km edge length
 
 // Risk levels by region (simplified mock data)
@@ -73,22 +72,32 @@ const INSURANCE_TYPES = [
   }
 ];
 
-function getHexagons(center, radiusKm = 5) {
-  // Get all hexagons within a radius (in km) of the center
-  const h3Center = h3.geoToH3(center[0], center[1], H3_RESOLUTION);
-  // Approximate: 1km per ring
-  const rings = Math.ceil(radiusKm / 1);
-  return [h3Center, ...h3.kRing(h3Center, rings).filter(h => h !== h3Center)];
+// Types for clarity and React standards
+type LatLngTuple = [number, number];
+
+interface HexagonSelectorProps {
+  hexagons: string[];
+  selectedHexagons: string[];
+  setSelectedHexagons: React.Dispatch<React.SetStateAction<string[]>>;
+  selectionMode: boolean;
 }
 
-function HexagonSelector({ hexagons, selectedHexagons, setSelectedHexagons, selectionMode }) {
+function getHexagons(center: LatLngTuple, radiusKm = 5): string[] {
+  // Get all hexagons within a radius (in km) of the center
+  const h3Center = geoToH3(center[0], center[1], H3_RESOLUTION);
+  // Approximate: 1km per ring
+  const rings = Math.ceil(radiusKm / 1);
+  return [h3Center, ...kRing(h3Center, rings).filter((h: string) => h !== h3Center)];
+}
+
+function HexagonSelector({ hexagons, selectedHexagons, setSelectedHexagons, selectionMode }: HexagonSelectorProps) {
   useMapEvents({
-    click: (e: any) => {
+    click: (e: { latlng: { lat: number; lng: number } }) => {
       if (!selectionMode) return;
       
       // Convert click to H3 index
       const { lat, lng } = e.latlng;
-      const clickedHex = h3.geoToH3(lat, lng, H3_RESOLUTION);
+      const clickedHex = geoToH3(lat, lng, H3_RESOLUTION);
       
       // Toggle selection
       if (selectedHexagons.includes(clickedHex)) {
@@ -102,9 +111,10 @@ function HexagonSelector({ hexagons, selectedHexagons, setSelectedHexagons, sele
   return (
     <>
       {hexagons.map(h3Index => {
-        const boundary = h3.h3ToGeoBoundary(h3Index, true).map(([lat, lng]) => [lat, lng]);
+        const boundary = h3ToGeoBoundary(h3Index, true).map(
+          ([lat, lng]: [number, number]) => [lat, lng] as LatLngTuple
+        );
         const isSelected = selectedHexagons.includes(h3Index);
-        
         return (
           <Polygon
             key={h3Index}
@@ -123,7 +133,7 @@ function HexagonSelector({ hexagons, selectedHexagons, setSelectedHexagons, sele
 }
 
 export default function WorldmapSelector() {
-  const [center, setCenter] = useState(NHA_TRANG_COORDS);
+  const [center, setCenter] = useState<LatLngTuple>(NHA_TRANG_COORDS as LatLngTuple);
   const [hexagons, setHexagons] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [searching, setSearching] = useState(false);
@@ -131,7 +141,7 @@ export default function WorldmapSelector() {
   const [selectedHexagons, setSelectedHexagons] = useState<string[]>([]);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedInsurance, setSelectedInsurance] = useState<string[]>([]);
-  const [regionRisk, setRegionRisk] = useState<string>("medium");
+  const [regionRisk, ] = useState<string>("medium");
   const [businessSize, setBusinessSize] = useState<string>("small");
 
   useEffect(() => {
@@ -144,9 +154,7 @@ export default function WorldmapSelector() {
     setError(null);
     try {
       // Use OpenStreetMap Nominatim API for geocoding
-      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-        search
-      )}`;
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(search)}`;
       const res = await fetch(url);
       const data = await res.json();
       if (data && data.length > 0) {
@@ -163,7 +171,7 @@ export default function WorldmapSelector() {
   }
 
   // Get region information based on coordinates
-  const getRegionInfo = (coords) => {
+  const getRegionInfo = (coords: LatLngTuple): string => {
     // This would be replaced with actual API calls in production
     // Simple mock logic for demo
     const lat = coords[0];
@@ -177,15 +185,15 @@ export default function WorldmapSelector() {
   };
 
   // Calculate risk level for a region
-  const calculateRiskLevel = (region, riskType) => {
+  const calculateRiskLevel = (region: string, riskType: keyof typeof MOCK_RISK_DATA): string => {
     if (MOCK_RISK_DATA[riskType].high.includes(region)) return "High";
     if (MOCK_RISK_DATA[riskType].medium.includes(region)) return "Medium";
     return "Low";
   };
   
   // Calculate insurance cost based on selection
-  const calculateInsuranceCost = () => {
-    if (selectedHexagons.length === 0 || selectedInsurance.length === 0) return 0;
+  const calculateInsuranceCost = (): string => {
+    if (selectedHexagons.length === 0 || selectedInsurance.length === 0) return "0.00";
     
     const areaCoverage = selectedHexagons.length;
     const regionMultiplier = regionRisk === "high" ? 1.5 : regionRisk === "medium" ? 1.2 : 1;
@@ -224,11 +232,11 @@ export default function WorldmapSelector() {
         AMOCA Climate Insurance - Area Selector
       </Heading>
       <Flex gap="2" mb="2" align="center">
-        <TextField
+        <TextField.Input
           placeholder="Search country, state, city, or code..."
           value={search}
-          onChange={e => setSearch(e.target.value)}
-          onKeyDown={e => {
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
             if (e.key === "Enter") handleSearch();
           }}
           style={{
@@ -285,7 +293,7 @@ export default function WorldmapSelector() {
       </Flex>
 
       <MapContainer
-        center={center as [number, number]}
+        center={center}
         zoom={13}
         style={{
           height: "500px",
@@ -361,7 +369,7 @@ export default function WorldmapSelector() {
                     <Flex gap="2" align="center">
                       <Checkbox 
                         checked={selectedInsurance.includes(insurance.id)}
-                        onCheckedChange={(checked) => {
+                        onCheckedChange={(checked: boolean) => {
                           if (checked) {
                             setSelectedInsurance(prev => [...prev, insurance.id]);
                           } else {

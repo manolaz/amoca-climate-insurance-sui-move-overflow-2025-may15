@@ -1,7 +1,5 @@
-import { Box, Heading, Grid, Card, Text, Flex, Button } from "@radix-ui/themes";
+import { Box, Heading, Card, Text, Flex, Button } from "@radix-ui/themes";
 import PageLayout from "../components/PageLayout";
-import InsuranceCard from "../components/InsuranceCard";
-import { Link } from "react-router-dom";
 
 export default function ProductsPage() {
   const insuranceProducts = [
